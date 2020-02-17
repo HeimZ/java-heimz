@@ -1,0 +1,17 @@
+model:
+  policy:
+    - role:
+        - hierarchy: 15
+        - application
+    - subject:
+        - user:
+            - organization
+        - group
+    - object
+    - action
+    - rule:
+        - permit
+        - recommend
+        - oblige
+        - prohibit
+    - priority
