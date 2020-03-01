@@ -2,10 +2,9 @@ package dev.heimz.heimdall.definition;
 
 import dev.heimz.heimdall.bdd.Utils;
 import io.cucumber.java8.DataTableEntryDefinitionBody;
+import java.util.Map;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-
-import java.util.Map;
 
 interface ModelDefinitionBodies {
 
