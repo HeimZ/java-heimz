@@ -1,25 +1,26 @@
 package dev.heimz.heimdall.definition;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import io.cucumber.java8.En;
+import org.apache.commons.io.IOUtils;
+
 import java.io.InputStream;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelDefinitionSteps implements En {
 
   private InputStream modelInputStream;
 
-  private Map<String, ModelDefinition> actualModelDefinitions;
+  private Map<String, ModelDefinition> actualModelDefinitionMap;
 
   private ModelDefinition expectedModelDefinition;
 
   private Throwable throwable;
 
   public ModelDefinitionSteps() {
-    DataTableType(ModelDefinitionBodies.MODEL_DEFINITION_DATA_TABLE_ENTRY);
+    DataTableType(ModelDefinitionBodies.MODEL_DEFINITION_DATA_TABLE);
 
     Given(
         "^The Heimdall Model is defined as below$",
@@ -31,7 +32,7 @@ public class ModelDefinitionSteps implements En {
         "^The ModelDefinitionLoader loads the given Heimdall Model$",
         () -> {
           try {
-            actualModelDefinitions = new ModelDefinitionLoader(modelInputStream).load();
+            actualModelDefinitionMap = new ModelDefinitionLoader(modelInputStream).load();
           } catch (Throwable throwable) {
             this.throwable = throwable;
           }
@@ -43,6 +44,13 @@ public class ModelDefinitionSteps implements En {
           assertThat(throwable, notNullValue());
           assertThat(throwable, instanceOf(ModelDefinitionException.class));
           assertThat(throwable.getMessage(), equalTo(message));
+        });
+
+    Then(
+        "^A ModelDefinition is loaded into a map with key \"([^\"]*)\" and following values$",
+        (String key, ModelDefinition expectedModelDefinition) -> {
+          assertThat(actualModelDefinitionMap.containsKey(key), equalTo(true));
+          assertThat(actualModelDefinitionMap.get(key), equalTo(expectedModelDefinition));
         });
   }
 }

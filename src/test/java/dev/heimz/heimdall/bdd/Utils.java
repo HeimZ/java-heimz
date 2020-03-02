@@ -1,8 +1,9 @@
 package dev.heimz.heimdall.bdd;
 
 import dev.heimz.heimdall.policy.Rule;
-import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
 
 public interface Utils {
 
@@ -10,6 +11,9 @@ public interface Utils {
     if (StringUtils.isBlank(input)) {
       return new Rule[] {};
     }
-    return Arrays.stream(input.split("\\s*,\\s*")).map(Rule::valueOf).toArray(Rule[]::new);
+    return Arrays.stream(input.split("\\s*,\\s*"))
+        .map(String::toUpperCase)
+        .map(Rule::valueOf)
+        .toArray(Rule[]::new);
   }
 }
