@@ -4,11 +4,10 @@ import dev.heimz.heimdall.bdd.Utils;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java8.DataTableDefinitionBody;
 import io.cucumber.java8.DataTableEntryDefinitionBody;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 interface ModelDefinitionBodies {
 
