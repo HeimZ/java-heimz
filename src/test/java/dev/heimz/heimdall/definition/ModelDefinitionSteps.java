@@ -1,12 +1,13 @@
 package dev.heimz.heimdall.definition;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import io.cucumber.java8.En;
+import org.apache.commons.io.IOUtils;
+
 import java.io.InputStream;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelDefinitionSteps implements En {
 
@@ -25,6 +26,16 @@ public class ModelDefinitionSteps implements En {
         "^The Heimdall Model is defined as below$",
         (String model) -> {
           modelInputStream = IOUtils.toInputStream(model);
+        });
+
+    When(
+        "^The ModelDefinitionLoader loads without a given Heimdall Model$",
+        () -> {
+          try {
+            actualModelDefinitionMap = new ModelDefinitionLoader().load();
+          } catch (Throwable throwable) {
+            this.throwable = throwable;
+          }
         });
 
     When(

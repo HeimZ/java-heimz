@@ -6,12 +6,12 @@ interface RoleDefinition {
 
   @Default
   default boolean role() {
-    return true;
+    return false;
   }
 
   @Default
   default boolean roleHierarchy() {
-    return true;
+    return false;
   }
 
   @Default

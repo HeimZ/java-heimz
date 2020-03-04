@@ -6,7 +6,7 @@ interface SubjectDefinition {
 
   @Default
   default boolean user() {
-    return true;
+    return false;
   }
 
   @Default

@@ -1,26 +1,31 @@
 package dev.heimz.heimdall.definition;
 
 import dev.heimz.heimdall.policy.Rule;
-import java.io.InputStream;
-import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
+
+import java.io.InputStream;
+import java.util.*;
 
 public class ModelDefinitionLoader {
 
   private final InputStream configInputStream;
 
   public ModelDefinitionLoader() {
-    this(loadFromResources());
+    this("heimdall.yml");
+  }
+
+  private ModelDefinitionLoader(String resourceName) {
+    this(loadFromResource(resourceName));
   }
 
   ModelDefinitionLoader(InputStream configInputStream) {
     this.configInputStream = configInputStream;
   }
 
-  private static InputStream loadFromResources() {
-    return ModelDefinitionLoader.class.getClassLoader().getResourceAsStream("heimdall.yml");
+  private static InputStream loadFromResource(String resourceName) {
+    return ModelDefinitionLoader.class.getClassLoader().getResourceAsStream(resourceName);
   }
 
   private static String asString(String name, Object object) {
@@ -82,27 +87,29 @@ public class ModelDefinitionLoader {
     final Map<String, ModelDefinition> modelDefinitionMap = new HashMap<>();
 
     if (configInputStream == null) {
-      // TODO: 29/02/20 Replace with RBAC standard
-      modelDefinitionMap.put("default", ImmutableModelDefinition.builder().build());
-    }
+      final Map<String, ModelDefinition> rbacModelDefinition =
+          new ModelDefinitionLoader("rbac.yml").load();
+      modelDefinitionMap.put(
+          "default",
+          ImmutableModelDefinition.builder().from(rbacModelDefinition.get("rbac")).build());
+    } else {
+      final Yaml yaml = new Yaml();
+      try {
+        final Iterable<Object> modelDocuments = yaml.loadAll(configInputStream);
+        final Iterator<Object> modelDocumentsIterator = modelDocuments.iterator();
 
-    final Yaml yaml = new Yaml();
-
-    try {
-      final Iterable<Object> modelDocuments = yaml.loadAll(configInputStream);
-      final Iterator<Object> modelDocumentsIterator = modelDocuments.iterator();
-
-      if (modelDocumentsIterator.hasNext()) {
-        while (modelDocumentsIterator.hasNext()) {
-          loadModelDefinition(modelDefinitionMap, modelDocumentsIterator.next());
+        if (modelDocumentsIterator.hasNext()) {
+          while (modelDocumentsIterator.hasNext()) {
+            loadModelDefinition(modelDefinitionMap, modelDocumentsIterator.next());
+          }
+        } else {
+          throwBlankOrEmptyException();
         }
-      } else {
-        throwBlankOrEmptyException();
+      } catch (ParserException | ScannerException ex) {
+        throw new ModelDefinitionException(
+            String.format(
+                "Provided Heimdall model is a malformed YAML document!%n%s", ex.getMessage()));
       }
-    } catch (ParserException | ScannerException ex) {
-      throw new ModelDefinitionException(
-          String.format(
-              "Provided Heimdall model is a malformed YAML document!%n%s", ex.getMessage()));
     }
 
     return modelDefinitionMap;
@@ -127,6 +134,7 @@ public class ModelDefinitionLoader {
     boolean eitherUseOrPolicyDefined = false;
     if (modelMap.containsKey("use")) {
       eitherUseOrPolicyDefined = true;
+      // TODO: 04/03/20 Implement 'use' object functionality to load pre-defined standard models
       throw new ModelDefinitionException("Using standard models is not supported yet!");
     }
     if (modelMap.containsKey("policy")) {

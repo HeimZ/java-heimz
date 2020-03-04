@@ -6,12 +6,12 @@ interface PolicyDefinition extends RoleDefinition, SubjectDefinition, RuleDefini
 
   @Default
   default boolean object() {
-    return true;
+    return false;
   }
 
   @Default
   default boolean action() {
-    return true;
+    return false;
   }
 
   @Default
