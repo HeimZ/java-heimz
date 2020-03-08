@@ -49,3 +49,34 @@ Feature: ModelDefinitionLoader loads model definition yaml document to ModelDefi
       | object           | true                                |
       | action           | true                                |
       | priority         | true                                |
+
+  Scenario: Loads given Heimdall yaml document with 'use' object into a ModelDefinition class instance.
+    Given The Heimdall Model is defined as below
+      """
+      default:
+        use: rbac
+        policy:
+          - subject:
+              - user:
+                  - organization
+              - group
+          - object
+          - action
+          - rule:
+              - permit
+              - prohibit
+          - priority
+      """
+    When The ModelDefinitionLoader loads the given Heimdall Model
+    Then A ModelDefinition is loaded into a map with key "default" and following values
+      | role             | true             |
+      | roleHierarchy    | true             |
+      | maxRoleHierarchy | 10               |
+      | application      | false            |
+      | user             | true             |
+      | organization     | true             |
+      | group            | true             |
+      | rules            | permit, prohibit |
+      | object           | true             |
+      | action           | true             |
+      | priority         | true             |

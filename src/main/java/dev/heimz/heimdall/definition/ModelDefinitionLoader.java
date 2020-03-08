@@ -1,11 +1,12 @@
 package dev.heimz.heimdall.definition;
 
 import dev.heimz.heimdall.policy.Rule;
-import java.io.InputStream;
-import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
+
+import java.io.InputStream;
+import java.util.*;
 
 public class ModelDefinitionLoader {
 
@@ -133,8 +134,9 @@ public class ModelDefinitionLoader {
     boolean eitherUseOrPolicyDefined = false;
     if (modelMap.containsKey("use")) {
       eitherUseOrPolicyDefined = true;
-      // TODO: 04/03/20 Implement 'use' object functionality to load pre-defined standard models
-      throw new ModelDefinitionException("Using standard models is not supported yet!");
+      final String standardModelName = asString("use", modelMap.get("use"));
+      final Map<String, ModelDefinition> standardModelDefinition = new ModelDefinitionLoader(standardModelName + ".yml").load();
+      builder.from(standardModelDefinition.get(standardModelName));
     }
     if (modelMap.containsKey("policy")) {
       eitherUseOrPolicyDefined = true;
