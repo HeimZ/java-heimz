@@ -176,3 +176,26 @@ Feature: ModelDefinitionLoader throws proper exceptions when invalid model defin
       """
       The rule-item-3 object must be one of [permit, recommend, oblige, prohibit], but was: invalidRule
       """
+
+  Scenario: A non-existing standard model is used in model definition
+    Given The Heimdall Model is defined as below
+      """
+      model:
+        use: invalid-standard
+        policy:
+          - subject:
+              - user:
+                  - organization
+              - group
+          - object
+          - action
+          - rule:
+              - permit
+              - prohibit
+          - priority
+      """
+    When The ModelDefinitionLoader loads the given Heimdall Model
+    Then The ModelDefinitionException is thrown with following message
+      """
+      Heimdall model resource with name 'invalid-standard.yml' not found in classpath!
+      """

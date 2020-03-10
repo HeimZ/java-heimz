@@ -1,8 +1,9 @@
 package dev.heimz.heimdall.bdd;
 
 import dev.heimz.heimdall.policy.Rule;
-import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
 
 public interface Utils {
 

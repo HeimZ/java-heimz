@@ -1,13 +1,16 @@
 package dev.heimz.heimdall.definition;
 
 import dev.heimz.heimdall.policy.Rule;
-import java.io.InputStream;
-import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import java.io.InputStream;
+import java.util.*;
+
 public class ModelDefinitionLoader {
+
+  private final String resourceName;
 
   private final InputStream configInputStream;
 
@@ -16,10 +19,11 @@ public class ModelDefinitionLoader {
   }
 
   private ModelDefinitionLoader(String resourceName) {
-    this(loadFromResource(resourceName));
+    this(resourceName, loadFromResource(resourceName));
   }
 
-  ModelDefinitionLoader(InputStream configInputStream) {
+  ModelDefinitionLoader(String resourceName, InputStream configInputStream) {
+    this.resourceName = resourceName;
     this.configInputStream = configInputStream;
   }
 
@@ -61,6 +65,12 @@ public class ModelDefinitionLoader {
     return Collections.unmodifiableMap(map);
   }
 
+  private static void throwModelNotFoundException(String resourceName) {
+    throw new ModelDefinitionException(
+        String.format(
+            "Heimdall model resource with name '%s' not found in classpath!", resourceName));
+  }
+
   private static void throwBlankOrEmptyException() {
     throw new ModelDefinitionException("Provided Heimdall model is either blank or empty!");
   }
@@ -83,35 +93,47 @@ public class ModelDefinitionLoader {
   }
 
   public Map<String, ModelDefinition> load() {
+    return load(true);
+  }
+
+  private Map<String, ModelDefinition> load(boolean fallback) {
     final Map<String, ModelDefinition> modelDefinitionMap = new HashMap<>();
 
     if (configInputStream == null) {
-      final Map<String, ModelDefinition> rbacModelDefinition =
-          new ModelDefinitionLoader("rbac.yml").load();
-      modelDefinitionMap.put(
-          "default",
-          ImmutableModelDefinition.builder().from(rbacModelDefinition.get("rbac")).build());
-    } else {
-      final Yaml yaml = new Yaml();
-      try {
-        final Iterable<Object> modelDocuments = yaml.loadAll(configInputStream);
-        final Iterator<Object> modelDocumentsIterator = modelDocuments.iterator();
-
-        if (modelDocumentsIterator.hasNext()) {
-          while (modelDocumentsIterator.hasNext()) {
-            loadModelDefinition(modelDefinitionMap, modelDocumentsIterator.next());
-          }
-        } else {
-          throwBlankOrEmptyException();
-        }
-      } catch (ParserException | ScannerException ex) {
-        throw new ModelDefinitionException(
-            String.format(
-                "Provided Heimdall model is a malformed YAML document!%n%s", ex.getMessage()));
+      if (fallback) {
+        final Map<String, ModelDefinition> rbacModelDefinition =
+            new ModelDefinitionLoader("rbac.yml").load(false);
+        modelDefinitionMap.put(
+            "default",
+            ImmutableModelDefinition.builder().from(rbacModelDefinition.get("rbac")).build());
+      } else {
+        throwModelNotFoundException(resourceName);
       }
+    } else {
+      loadModelDocument(modelDefinitionMap);
     }
 
     return modelDefinitionMap;
+  }
+
+  private void loadModelDocument(Map<String, ModelDefinition> modelDefinitionMap) {
+    final Yaml yaml = new Yaml();
+    try {
+      final Iterable<Object> modelDocuments = yaml.loadAll(configInputStream);
+      final Iterator<Object> modelDocumentsIterator = modelDocuments.iterator();
+
+      if (modelDocumentsIterator.hasNext()) {
+        while (modelDocumentsIterator.hasNext()) {
+          loadModelDefinition(modelDefinitionMap, modelDocumentsIterator.next());
+        }
+      } else {
+        throwBlankOrEmptyException();
+      }
+    } catch (ParserException | ScannerException ex) {
+      throw new ModelDefinitionException(
+          String.format(
+              "Provided Heimdall model is a malformed YAML document!%n%s", ex.getMessage()));
+    }
   }
 
   private void loadModelDefinition(
@@ -135,7 +157,7 @@ public class ModelDefinitionLoader {
       eitherUseOrPolicyDefined = true;
       final String standardModelName = asString("use", modelMap.get("use"));
       final Map<String, ModelDefinition> standardModelDefinition =
-          new ModelDefinitionLoader(standardModelName + ".yml").load();
+          new ModelDefinitionLoader(standardModelName + ".yml").load(false);
       builder.from(standardModelDefinition.get(standardModelName));
     }
     if (modelMap.containsKey("policy")) {

@@ -10,9 +10,9 @@ Feature: ModelDefinitionLoader loads model definition yaml document to ModelDefi
       | user             | true   |
       | organization     | false  |
       | group            | false  |
-      | rules            | permit |
       | object           | true   |
       | action           | true   |
+      | rules            | permit |
       | priority         | false  |
 
   Scenario: Loads given Heimdall yaml document into a ModelDefinition class instance.
@@ -45,9 +45,9 @@ Feature: ModelDefinitionLoader loads model definition yaml document to ModelDefi
       | user             | true                                |
       | organization     | true                                |
       | group            | true                                |
-      | rules            | permit, recommend, oblige, prohibit |
       | object           | true                                |
       | action           | true                                |
+      | rules            | permit, recommend, oblige, prohibit |
       | priority         | true                                |
 
   Scenario: Loads given Heimdall yaml document with 'use' object into a ModelDefinition class instance.
@@ -76,7 +76,7 @@ Feature: ModelDefinitionLoader loads model definition yaml document to ModelDefi
       | user             | true             |
       | organization     | true             |
       | group            | true             |
-      | rules            | permit, prohibit |
       | object           | true             |
       | action           | true             |
+      | rules            | permit, prohibit |
       | priority         | true             |

@@ -1,12 +1,13 @@
 package dev.heimz.heimdall.definition;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import io.cucumber.java8.En;
+import org.apache.commons.io.IOUtils;
+
 import java.io.InputStream;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ModelDefinitionSteps implements En {
 
@@ -41,7 +42,7 @@ public class ModelDefinitionSteps implements En {
         "^The ModelDefinitionLoader loads the given Heimdall Model$",
         () -> {
           try {
-            actualModelDefinitionMap = new ModelDefinitionLoader(modelInputStream).load();
+            actualModelDefinitionMap = new ModelDefinitionLoader("bdd", modelInputStream).load();
           } catch (Throwable throwable) {
             this.throwable = throwable;
           }
