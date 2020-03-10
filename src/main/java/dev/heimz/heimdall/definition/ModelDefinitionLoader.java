@@ -1,6 +1,8 @@
 package dev.heimz.heimdall.definition;
 
 import dev.heimz.heimdall.policy.Rule;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
@@ -9,6 +11,8 @@ import java.io.InputStream;
 import java.util.*;
 
 public class ModelDefinitionLoader {
+
+  private static final Logger logger = LogManager.getLogger(ModelDefinitionLoader.class);
 
   private final String resourceName;
 
@@ -65,18 +69,23 @@ public class ModelDefinitionLoader {
     return Collections.unmodifiableMap(map);
   }
 
+  private static void throwModelDefinitionException(String message) {
+    logger.error(message);
+    throw new ModelDefinitionException(message);
+  }
+
   private static void throwModelNotFoundException(String resourceName) {
-    throw new ModelDefinitionException(
+    throwModelDefinitionException(
         String.format(
-            "Heimdall model resource with name '%s' not found in classpath!", resourceName));
+            "Heimdall model '%s' not found in classpath!", resourceName));
   }
 
   private static void throwBlankOrEmptyException() {
-    throw new ModelDefinitionException("Provided Heimdall model is either blank or empty!");
+    throwModelDefinitionException("Provided Heimdall model is either blank or empty!");
   }
 
   private static void throwInvalidObjectException(String name, String expected, String actual) {
-    throw new ModelDefinitionException(
+    throwModelDefinitionException(
         String.format("The %s object must be %s, but was: %s", name, expected, actual));
   }
 
@@ -86,13 +95,14 @@ public class ModelDefinitionLoader {
 
   private static void throwInvalidObjectException(
       String name, String expected, Object object, String actual) {
-    throw new ModelDefinitionException(
+    throwModelDefinitionException(
         String.format(
             "The %s object must be %s, but was: %s%s",
             name, expected, object.getClass().getSimpleName(), actual));
   }
 
   public Map<String, ModelDefinition> load() {
+    logger.info("Starting to load the 'heimdall.yml' model from classpath!");
     return load(true);
   }
 
@@ -101,6 +111,10 @@ public class ModelDefinitionLoader {
 
     if (configInputStream == null) {
       if (fallback) {
+        logger.debug(
+            "Heimdall model '{}' not found in classpath. Falling back to standard model 'rbac'.",
+            resourceName);
+
         final Map<String, ModelDefinition> rbacModelDefinition =
             new ModelDefinitionLoader("rbac.yml").load(false);
         modelDefinitionMap.put(
@@ -117,6 +131,8 @@ public class ModelDefinitionLoader {
   }
 
   private void loadModelDocument(Map<String, ModelDefinition> modelDefinitionMap) {
+    logger.debug("Loading model document '{}'", resourceName);
+
     final Yaml yaml = new Yaml();
     try {
       final Iterable<Object> modelDocuments = yaml.loadAll(configInputStream);
@@ -130,7 +146,7 @@ public class ModelDefinitionLoader {
         throwBlankOrEmptyException();
       }
     } catch (ParserException | ScannerException ex) {
-      throw new ModelDefinitionException(
+      throwModelDefinitionException(
           String.format(
               "Provided Heimdall model is a malformed YAML document!%n%s", ex.getMessage()));
     }
@@ -148,6 +164,8 @@ public class ModelDefinitionLoader {
     final Map.Entry<String, Object> rootObject = rootObjectMap.entrySet().iterator().next();
     final String modelIdentifier = rootObject.getKey();
 
+    logger.info("Loading model definition with identifier '{}'", modelIdentifier);
+
     final ImmutableModelDefinition.Builder builder = ImmutableModelDefinition.builder();
 
     // 'use' or 'policy'
@@ -156,6 +174,7 @@ public class ModelDefinitionLoader {
     if (modelMap.containsKey("use")) {
       eitherUseOrPolicyDefined = true;
       final String standardModelName = asString("use", modelMap.get("use"));
+      logger.debug("Using standard model '{}'", standardModelName);
       final Map<String, ModelDefinition> standardModelDefinition =
           new ModelDefinitionLoader(standardModelName + ".yml").load(false);
       builder.from(standardModelDefinition.get(standardModelName));
@@ -165,13 +184,15 @@ public class ModelDefinitionLoader {
       loadPolicyDefinition(builder, modelMap.get("policy"));
     }
     if (!eitherUseOrPolicyDefined) {
-      throw new ModelDefinitionException("Either 'use' or 'policy' object must be defined!");
+      throwModelDefinitionException("Either 'use' or 'policy' object must be defined!");
     }
 
     modelDefinitionMap.put(modelIdentifier, builder.build());
   }
 
   private void loadPolicyDefinition(ImmutableModelDefinition.Builder builder, Object object) {
+    logger.debug("Loading policy definition");
+
     final List<Object> policyItems = asSequence("policy", object);
 
     for (int i = 1; i <= policyItems.size(); i++) {
@@ -206,6 +227,8 @@ public class ModelDefinitionLoader {
   }
 
   private void loadRoleDefinition(ImmutableModelDefinition.Builder builder, Object object) {
+    logger.debug("Loading role definition");
+
     builder.role(true);
     if (!(object instanceof String)) {
       final List<Object> roleItems =
@@ -234,6 +257,8 @@ public class ModelDefinitionLoader {
   }
 
   private void loadSubjectDefinition(ImmutableModelDefinition.Builder builder, Object object) {
+    logger.debug("Loading subject definition");
+
     final List<Object> subjectItems =
         asSequence("subject", asKeyCaseInsensitiveSingleKeyMap("subject", object).get("subject"));
     for (int i = 1; i <= subjectItems.size(); i++) {
@@ -252,6 +277,8 @@ public class ModelDefinitionLoader {
   }
 
   private void loadUserDefinition(ImmutableModelDefinition.Builder builder, Object object) {
+    logger.debug("Loading user definition");
+
     builder.user(true);
     if (!(object instanceof String)) {
       final List<Object> userItems =
@@ -267,6 +294,8 @@ public class ModelDefinitionLoader {
   }
 
   private void loadRuleDefinition(ImmutableModelDefinition.Builder builder, Object object) {
+    logger.debug("Loading rule definition");
+
     final List<Object> ruleItems =
         asSequence("rule", asKeyCaseInsensitiveSingleKeyMap("rule", object).get("rule"));
     final Rule[] rules = new Rule[ruleItems.size()];

@@ -197,5 +197,5 @@ Feature: ModelDefinitionLoader throws proper exceptions when invalid model defin
     When The ModelDefinitionLoader loads the given Heimdall Model
     Then The ModelDefinitionException is thrown with following message
       """
-      Heimdall model resource with name 'invalid-standard.yml' not found in classpath!
+      Heimdall model 'invalid-standard.yml' not found in classpath!
       """
