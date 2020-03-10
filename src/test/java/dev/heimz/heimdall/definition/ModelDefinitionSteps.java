@@ -1,13 +1,12 @@
 package dev.heimz.heimdall.definition;
 
-import io.cucumber.java8.En;
-import org.apache.commons.io.IOUtils;
-
-import java.io.InputStream;
-import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import io.cucumber.java8.En;
+import java.io.InputStream;
+import java.util.Map;
+import org.apache.commons.io.IOUtils;
 
 public class ModelDefinitionSteps implements En {
 
