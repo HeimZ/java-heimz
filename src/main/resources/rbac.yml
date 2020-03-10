@@ -1,0 +1,8 @@
+rbac:
+  policy:
+    - role:
+        - hierarchy
+    - subject:
+        - user
+    - object
+    - action
