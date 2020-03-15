@@ -1,26 +1,15 @@
 package dev.heimz.heimdall.model.entity;
 
+import org.immutables.value.Value.Immutable;
+
 import java.util.List;
 
-public class Organization {
+@Immutable
+public interface Organization {
 
-    private String name;
+    OrganizationID id();
 
-    private List<User> users;
+    List<User> users();
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
+    List<Group> groups();
 }

@@ -1,15 +1,17 @@
 package dev.heimz.heimdall.model.entity;
 
-public class Policy {
+import org.immutables.value.Value.Immutable;
 
-    private Role role;
+@Immutable
+public interface Policy {
 
-    private String object;
+    Role role();
 
-    private String action;
+    String object();
 
-    private Rule rule;
+    String action();
 
-    private Priority priority;
+    Rule rule();
 
+    Priority priority();
 }

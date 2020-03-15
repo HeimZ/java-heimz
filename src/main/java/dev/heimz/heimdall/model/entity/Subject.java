@@ -1,26 +1,13 @@
 package dev.heimz.heimdall.model.entity;
 
+import org.immutables.value.Value.Immutable;
+
 import java.util.List;
 
-public class Subject {
+@Immutable
+public interface Subject {
 
-    private String name;
+    Organization organization();
 
-    private List<Role> roles;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+    List<Role> roles();
 }

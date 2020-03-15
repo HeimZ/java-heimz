@@ -1,16 +1,13 @@
 package dev.heimz.heimdall.model.entity;
 
+import org.immutables.value.Value.Immutable;
+
 import java.util.List;
 
-public class Group extends Subject {
+@Immutable
+public interface Group extends Subject {
 
-    private List<? extends Subject> subjects;
+  GroupID id();
 
-    public List<? extends Subject> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(List<? extends Subject> subjects) {
-        this.subjects = subjects;
-    }
+  List<? extends Subject> subjects();
 }
