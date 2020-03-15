@@ -1,4 +1,4 @@
-package dev.heimz.heimdall.definition;
+package dev.heimz.heimdall.model.definition;
 
 import dev.heimz.heimdall.policy.Rule;
 import org.immutables.value.Value.Default;
