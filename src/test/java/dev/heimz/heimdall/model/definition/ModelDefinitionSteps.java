@@ -1,4 +1,4 @@
-package dev.heimz.heimdall.definition;
+package dev.heimz.heimdall.model.definition;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;

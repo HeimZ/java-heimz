@@ -1,6 +1,6 @@
 package dev.heimz.heimdall.bdd;
 
-import dev.heimz.heimdall.policy.Rule;
+import dev.heimz.heimdall.model.entity.Rule;
 import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,4 +1,4 @@
-package dev.heimz.heimdall.policy;
+package dev.heimz.heimdall.model.entity;
 
 public enum Rule {
   PERMIT,
