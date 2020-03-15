@@ -5,13 +5,13 @@ import org.immutables.value.Value.Immutable;
 @Immutable
 public interface Policy {
 
-    Role role();
+  Role role();
 
-    String object();
+  String object();
 
-    String action();
+  String action();
 
-    Rule rule();
+  Rule rule();
 
-    Priority priority();
+  Priority priority();
 }

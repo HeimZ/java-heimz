@@ -1,14 +1,13 @@
 package dev.heimz.heimdall.model.definition;
 
 import dev.heimz.heimdall.model.entity.Rule;
+import java.io.InputStream;
+import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
-
-import java.io.InputStream;
-import java.util.*;
 
 public class ModelDefinitionLoader {
 

@@ -5,5 +5,5 @@ import org.immutables.value.Value.Immutable;
 @Immutable
 public interface User extends Subject {
 
-    UserID id();
+  UserID id();
 }

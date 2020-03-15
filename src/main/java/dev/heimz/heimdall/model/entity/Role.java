@@ -1,17 +1,16 @@
 package dev.heimz.heimdall.model.entity;
 
-import org.immutables.value.Value.Immutable;
-
 import java.util.List;
+import org.immutables.value.Value.Immutable;
 
 @Immutable
 public interface Role {
 
-    String name();
+  String name();
 
-    Application application();
+  Application application();
 
-    List<? extends Subject> subjects();
+  List<? extends Subject> subjects();
 
-    List<Policy> policies();
+  List<Policy> policies();
 }
