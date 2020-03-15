@@ -8,5 +8,5 @@ public interface Group extends Subject {
 
   GroupID id();
 
-  List<? extends Subject> subjects();
+  List<? extends Subject> members();
 }
