@@ -1,6 +1,6 @@
 package dev.heimz.heimdall.model.definition;
 
-import dev.heimz.heimdall.policy.Rule;
+import dev.heimz.heimdall.model.entity.Rule;
 import java.io.InputStream;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
